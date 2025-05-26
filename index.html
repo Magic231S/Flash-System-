@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CFW - لوحة تحكم FiveM المتكاملة</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+        }
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7));
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+        }
+        .package-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            transition: transform 0.3s;
+        }
+        .package-card:hover {
+            transform: translateY(-10px);
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            margin: 10px 0;
+            padding-right: 30px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: '✓';
+            color: #198754;
+            position: absolute;
+            right: 0;
+        }
+        .btn-custom {
+            background: #198754;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 25px;
+            border: none;
+            transition: all 0.3s;
+        }
+        .btn-custom:hover {
+            background: #157347;
+            color: white;
+            transform: scale(1.05);
+        }
+        .nav-link {
+            color: white !important;
+            margin: 0 15px;
+            position: relative;
+        }
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #198754;
+            bottom: 0;
+            right: 0;
+            transition: width 0.3s;
+        }
+        .nav-link:hover:after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- القائمة العلوية -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: rgba(0,0,0,0.8);">
+        <div class="container">
+            <a class="navbar-brand" href="#">CFW</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">المميزات</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#packages">الباقات</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">اتصل بنا</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="login.html" class="btn btn-outline-light me-2">تسجيل الدخول</a>
+                    <a href="register.html" class="btn btn-custom">إنشاء حساب</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- القسم الرئيسي -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <h1 class="display-4 fw-bold mb-4">لوحة تحكم FiveM المتكاملة</h1>
+                    <p class="lead mb-4">قم بتحسين إدارة سيرفر FiveM الخاص بك مع لوحة التحكم المتكاملة التي توفر جميع الأدوات التي تحتاجها</p>
+                    <a href="#packages" class="btn btn-custom btn-lg">ابدأ الآن</a>
+                </div>
+                <div class="col-lg-5 text-center">
+                    <div style="background:#222;border-radius:20px;padding:40px 0;">
+                        <i class="fas fa-server fa-5x text-success mb-3"></i>
+                        <h4>إدارة احترافية لسيرفرك</h4>
+                        <p>كل شيء في مكان واحد</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم المميزات -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">المميزات الرئيسية</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-shield-alt fa-3x mb-3 text-success"></i>
+                        <h4>لوحة تحكم متكاملة</h4>
+                        <p>إدارة جميع جوانب سيرفرك من مكان واحد</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-chart-line fa-3x mb-3 text-success"></i>
+                        <h4>إحصائيات متقدمة</h4>
+                        <p>تتبع أداء سيرفرك وتحليل البيانات</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-users fa-3x mb-3 text-success"></i>
+                        <h4>إدارة المستخدمين</h4>
+                        <p>تحكم كامل في صلاحيات المستخدمين</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الباقات -->
+    <section id="packages" class="py-5" style="background: rgba(255,255,255,0.02);">
+        <div class="container">
+            <h2 class="text-center mb-5">اختر الباقة المناسبة لك</h2>
+            <div class="row">
+                <!-- باقة SUPER -->
+                <div class="col-md-4">
+                    <div class="package-card">
+                        <h3 class="text-center mb-4">SUPER</h3>
+                        <h2 class="text-center mb-4">$20</h2>
+                        <ul class="feature-list">
+                            <li>لوحة تحكم متكاملة</li>
+                            <li>موقع ديناميكي</li>
+                            <li>نقاط تفاعل</li>
+                            <li>تفعيل إلكتروني</li>
+                            <li>دعم فني 24/7</li>
+                        </ul>
+                        <div class="text-center mt-4">
+                            <a href="register.html?package=SUPER" class="btn btn-custom">اختر هذه الباقة</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- باقة MEDIUM -->
+                <div class="col-md-4">
+                    <div class="package-card">
+                        <h3 class="text-center mb-4">MEDIUM</h3>
+                        <h2 class="text-center mb-4">$15</h2>
+                        <ul class="feature-list">
+                            <li>لوحة تحكم متكاملة</li>
+                            <li>موقع ديناميكي</li>
+                            <li>نقاط تفاعل</li>
+                            <li>دعم فني 24/7</li>
+                        </ul>
+                        <div class="text-center mt-4">
+                            <a href="register.html?package=MEDIUM" class="btn btn-custom">اختر هذه الباقة</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- باقة NORMAL -->
+                <div class="col-md-4">
+                    <div class="package-card">
+                        <h3 class="text-center mb-4">NORMAL</h3>
+                        <h2 class="text-center mb-4">$10</h2>
+                        <ul class="feature-list">
+                            <li>لوحة تحكم متكاملة</li>
+                            <li>موقع ديناميكي</li>
+                            <li>دعم فني 24/7</li>
+                        </ul>
+                        <div class="text-center mt-4">
+                            <a href="register.html?package=NORMAL" class="btn btn-custom">اختر هذه الباقة</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم اتصل بنا -->
+    <section id="contact" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">اتصل بنا</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form id="contactForm">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="الاسم" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="البريد الإلكتروني" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" rows="5" placeholder="الرسالة" required></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-custom">إرسال</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- تذييل الصفحة -->
+    <footer class="py-4" style="background: rgba(0,0,0,0.8);">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>CFW</h5>
+                    <p>لوحة تحكم FiveM المتكاملة</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="social-links">
+                        <a href="#" class="text-white me-3"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // معالجة نموذج الاتصال
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('تم إرسال رسالتك بنجاح!');
+            this.reset();
+        });
+    </script>
+</body>
+</html> 
