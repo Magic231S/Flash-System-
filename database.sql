@@ -4,11 +4,13 @@ USE fivem_panels;
 -- جدول المستخدمين
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    discord_id VARCHAR(255) NOT NULL UNIQUE,
-    username VARCHAR(255) NOT NULL,
-    package_type ENUM('SUPER', 'MEDIUM', 'NORMAL') NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    package_type VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    last_login TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE
 );
 
 -- جدول التفعيلات
