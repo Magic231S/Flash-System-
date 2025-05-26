@@ -2,92 +2,181 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>إنشاء حساب جديد - Theta</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب - CFW</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #000000; font-family: 'Cairo', sans-serif; color: #ffffff; }
-        .register-container { background: #1a1a1a; border-radius: 12px; padding: 32px 28px; max-width: 400px; margin: 60px auto; box-shadow: 0 4px 24px rgba(0,0,0,0.4);}
-        .register-title { font-size: 2rem; font-weight: bold; margin-bottom: 10px;}
-        .register-subtitle { font-size: 1.1rem; margin-bottom: 20px; color: #cccccc;}
-        .form-label { color: #ffffff;}
-        .form-control { background: #262626; color: #ffffff; border: 1px solid #333333;}
-        .form-control:focus { background: #262626; color: #ffffff; border-color: #ff8c00; box-shadow: none;}
-        .btn-primary { background: #ff4500; border: none; width: 100%; font-weight: bold;}
-        .btn-primary:hover { background: #cc3700;}
-        .login-link { color: #ff8c00; text-decoration: none; font-weight: bold;}
-        .login-link:hover { text-decoration: underline;}
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 40px 0;
+        }
+        .register-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .form-control {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px;
+        }
+        .form-control:focus {
+            background: rgba(255,255,255,0.15);
+            border-color: #198754;
+            color: white;
+            box-shadow: none;
+        }
+        .btn-custom {
+            background: #198754;
+            color: white;
+            padding: 12px;
+            border-radius: 25px;
+            border: none;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn-custom:hover {
+            background: #157347;
+            color: white;
+            transform: scale(1.02);
+        }
+        .package-select {
+            margin: 20px 0;
+        }
+        .package-option {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .package-option:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .package-option.selected {
+            border-color: #198754;
+            background: rgba(25,135,84,0.1);
+        }
+        .package-price {
+            font-size: 1.5em;
+            color: #198754;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <div class="register-container">
-        <div class="text-center">
-            <div class="register-title">إنشاء حساب جديد</div>
-            <div class="register-subtitle">يرجى تعبئة البيانات لإنشاء حسابك</div>
-        </div>
-        <form id="registerForm">
-            <div class="mb-3">
-                <label class="form-label">البريد الإلكتروني</label>
-                <input type="email" class="form-control" id="email" placeholder="example@email.com" required>
+    <div class="container">
+        <div class="register-container">
+            <h2 class="text-center mb-4">إنشاء حساب جديد</h2>
+            <form id="registerForm" class="mt-4">
+                <div class="mb-3">
+                    <label for="username" class="form-label">اسم المستخدم</label>
+                    <input type="text" class="form-control" id="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">البريد الإلكتروني</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">كلمة المرور</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">تأكيد كلمة المرور</label>
+                    <input type="password" class="form-control" id="confirmPassword" required>
+                </div>
+                <div class="mb-3">
+                    <label for="packageType" class="form-label">نوع الباقة</label>
+                    <select class="form-control" id="packageType" required>
+                        <option value="NORMAL">عادي</option>
+                        <option value="MEDIUM">متوسط</option>
+                        <option value="SUPER">سوبر</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">تسجيل</button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p>لديك حساب بالفعل؟ <a href="login.html" class="text-success">تسجيل الدخول</a></p>
             </div>
-            <div class="mb-3">
-                <label class="form-label">اسم المستخدم</label>
-                <input type="text" class="form-control" id="username" placeholder="اسم المستخدم" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">كلمة المرور</label>
-                <input type="password" class="form-control" id="password" placeholder="********" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">تأكيد كلمة المرور</label>
-                <input type="password" class="form-control" id="confirmPassword" placeholder="********" required>
-            </div>
-            <button type="submit" class="btn btn-primary">إنشاء حساب</button>
-        </form>
-        <div class="text-center mt-3">
-            لديك حساب بالفعل؟ <a href="login.html" class="login-link">تسجيل الدخول</a>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // استقبال رسائل من Lua
-        window.addEventListener('message', function(event) {
-            if(event.data.type === 'showLogin') {
-                window.location.href = 'login.html';
-            }
-            if(event.data.type === 'showRegister') {
-                document.querySelector('.register-container').style.display = 'block';
-            }
-            if(event.data.type === 'openPanel') {
-                window.location.href = 'index.html';
-            }
-        });
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            if(document.getElementById('password').value !== document.getElementById('confirmPassword').value) {
-                showMessage('كلمتا المرور غير متطابقتين!', 'error');
-                return;
-            }
-            fetch(`https://${GetParentResourceName()}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: document.getElementById('email').value,
-                    username: document.getElementById('username').value,
-                    password: document.getElementById('password').value
-                })
-            })
-            .then(res => res.json())
-            .then(res => {
-                if(res.success) {
-                    showMessage(res.message, 'success');
-                    setTimeout(()=>{ window.location.href = 'login.html'; }, 1000);
-                } else {
-                    showMessage(res.message, 'error');
-                }
+        // معالجة اختيار الباقة
+        const packageOptions = document.querySelectorAll('.package-option');
+        packageOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                packageOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
             });
         });
-        function showMessage(msg, type = 'info') {
-            alert(msg);
+
+        // معالجة نموذج التسجيل
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const packageType = document.getElementById('packageType').value;
+
+            if (password !== confirmPassword) {
+                alert('كلمات المرور غير متطابقة');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        password,
+                        packageType
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('تم إنشاء الحساب بنجاح');
+                    window.location.href = '/login.html';
+                } else {
+                    alert(data.error || 'حدث خطأ أثناء التسجيل');
+                }
+            } catch (error) {
+                console.error('خطأ:', error);
+                alert('حدث خطأ أثناء التسجيل');
+            }
+        });
+
+        // التحقق من الباقة المحددة في الرابط
+        const urlParams = new URLSearchParams(window.location.search);
+        const packageType = urlParams.get('package');
+        if (packageType) {
+            const packageOption = document.querySelector(`.package-option[data-package="${packageType}"]`);
+            if (packageOption) {
+                packageOption.classList.add('selected');
+            }
         }
     </script>
 </body>
