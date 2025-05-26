@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة التحكم العسكرية</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+        .panel-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 1200px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .nav-tabs .nav-link {
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .nav-tabs .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .tab-content {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #007bff;
+            color: white;
+        }
+        .table {
+            color: white;
+        }
+        .table thead th {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .table td, .table th {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="panel-container" id="militaryPanel" style="display: none;">
+        <h2 class="text-center mb-4">لوحة التحكم العسكرية</h2>
+        
+        <ul class="nav nav-tabs" id="militaryTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="reports-tab" data-bs-toggle="tab" href="#reports" role="tab">التقارير</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="points-tab" data-bs-toggle="tab" href="#points" role="tab">نقاط التفاعل</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="settings-tab" data-bs-toggle="tab" href="#settings" role="tab">الإعدادات</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="militaryTabContent">
+            <!-- قسم التقارير -->
+            <div class="tab-pane fade show active" id="reports" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>إضافة تقرير جديد</h4>
+                        <form id="reportForm">
+                            <div class="mb-3">
+                                <label class="form-label">التقرير</label>
+                                <textarea class="form-control" id="reportText" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">إرسال التقرير</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>التقارير الأخيرة</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>التاريخ</th>
+                                        <th>التقرير</th>
+                                        <th>الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportsList">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم نقاط التفاعل -->
+            <div class="tab-pane fade" id="points" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>إضافة نقاط تفاعل</h4>
+                        <form id="pointsForm">
+                            <div class="mb-3">
+                                <label class="form-label">النقاط</label>
+                                <input type="number" class="form-control" id="pointsInput" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">إضافة النقاط</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>إحصائيات النقاط</h4>
+                        <div class="card bg-dark">
+                            <div class="card-body">
+                                <h5 class="card-title">النقاط الحالية</h5>
+                                <p class="card-text" id="currentPoints">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم الإعدادات -->
+            <div class="tab-pane fade" id="settings" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>إعدادات الحساب</h4>
+                        <div class="card bg-dark">
+                            <div class="card-body">
+                                <h5 class="card-title">معلومات المستخدم</h5>
+                                <p class="card-text" id="userInfo"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-danger" onclick="closePanel()">إغلاق</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // استقبال البيانات من FiveM
+        window.addEventListener('message', function(event) {
+            if (event.data.type === "openMilitaryPanel") {
+                document.getElementById('militaryPanel').style.display = 'block';
+                updatePanelData(event.data.data);
+            } else if (event.data.type === "closeMilitaryPanel") {
+                document.getElementById('militaryPanel').style.display = 'none';
+            }
+        });
+
+        // تحديث بيانات اللوحة
+        function updatePanelData(data) {
+            if (data.userInfo) {
+                document.getElementById('userInfo').innerHTML = `
+                    <p>اسم المستخدم: ${data.userInfo.username}</p>
+                    <p>نوع الباقة: ${data.userInfo.package_type}</p>
+                `;
+            }
+            if (data.points) {
+                document.getElementById('currentPoints').textContent = data.points;
+            }
+            if (data.reports) {
+                updateReportsList(data.reports);
+            }
+        }
+
+        // تحديث قائمة التقارير
+        function updateReportsList(reports) {
+            const reportsList = document.getElementById('reportsList');
+            reportsList.innerHTML = '';
+            reports.forEach(report => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(report.created_at).toLocaleDateString()}</td>
+                    <td>${report.reason}</td>
+                    <td>${report.status}</td>
+                `;
+                reportsList.appendChild(row);
+            });
+        }
+
+        // إغلاق اللوحة
+        function closePanel() {
+            fetch(`https://${GetParentResourceName()}/closePanel`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+        }
+
+        // إرسال تقرير جديد
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const report = document.getElementById('reportText').value;
+            fetch(`https://${GetParentResourceName()}/submitReport`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ report })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('reportText').value = '';
+                    alert('تم إرسال التقرير بنجاح');
+                } else {
+                    alert(data.error || 'حدث خطأ أثناء إرسال التقرير');
+                }
+            });
+        });
+
+        // إضافة نقاط تفاعل
+        document.getElementById('pointsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const points = document.getElementById('pointsInput').value;
+            fetch(`https://${GetParentResourceName()}/updatePoints`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ points })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('pointsInput').value = '';
+                    alert('تم إضافة النقاط بنجاح');
+                } else {
+                    alert(data.error || 'حدث خطأ أثناء إضافة النقاط');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

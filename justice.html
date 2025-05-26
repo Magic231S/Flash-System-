@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة تحكم وزارة العدل</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+        .panel-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 1200px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .nav-tabs .nav-link {
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .nav-tabs .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .tab-content {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #0d6efd;
+            color: white;
+        }
+        .table {
+            color: white;
+        }
+        .table thead th {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .table td, .table th {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .case-card {
+            background-color: rgba(13, 110, 253, 0.2);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .case-card:hover {
+            background-color: rgba(13, 110, 253, 0.3);
+        }
+        .stats-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="panel-container" id="justicePanel" style="display: none;">
+        <h2 class="text-center mb-4">لوحة تحكم وزارة العدل</h2>
+        
+        <ul class="nav nav-tabs" id="justiceTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="cases-tab" data-bs-toggle="tab" href="#cases" role="tab">القضايا</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="warrants-tab" data-bs-toggle="tab" href="#warrants" role="tab">مذكرات التوقيف</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="stats-tab" data-bs-toggle="tab" href="#stats" role="tab">الإحصائيات</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="settings-tab" data-bs-toggle="tab" href="#settings" role="tab">الإعدادات</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="justiceTabContent">
+            <!-- قسم القضايا -->
+            <div class="tab-pane fade show active" id="cases" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4>القضايا النشطة</h4>
+                        <div id="activeCasesList">
+                            <!-- سيتم إضافة القضايا هنا ديناميكياً -->
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>تفاصيل القضية</h4>
+                        <div class="card bg-dark">
+                            <div class="card-body">
+                                <h5 class="card-title">معلومات القضية</h5>
+                                <p class="card-text" id="caseDetails">اختر قضية لعرض التفاصيل</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم مذكرات التوقيف -->
+            <div class="tab-pane fade" id="warrants" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4>مذكرات التوقيف النشطة</h4>
+                        <div id="activeWarrantsList">
+                            <!-- سيتم إضافة مذكرات التوقيف هنا ديناميكياً -->
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>إصدار مذكرة توقيف جديدة</h4>
+                        <form id="newWarrantForm">
+                            <div class="mb-3">
+                                <label class="form-label">اسم المشتبه به</label>
+                                <input type="text" class="form-control" id="suspectName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">سبب التوقيف</label>
+                                <textarea class="form-control" id="warrantReason" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">إصدار مذكرة توقيف</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم الإحصائيات -->
+            <div class="tab-pane fade" id="stats" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="stats-card">
+                            <h4>إحصائيات القضايا</h4>
+                            <div id="casesStats">
+                                <!-- سيتم إضافة إحصائيات القضايا هنا -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="stats-card">
+                            <h4>إحصائيات مذكرات التوقيف</h4>
+                            <div id="warrantsStats">
+                                <!-- سيتم إضافة إحصائيات مذكرات التوقيف هنا -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم الإعدادات -->
+            <div class="tab-pane fade" id="settings" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>إعدادات الحساب</h4>
+                        <div class="card bg-dark">
+                            <div class="card-body">
+                                <h5 class="card-title">معلومات المستخدم</h5>
+                                <p class="card-text" id="userInfo"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" onclick="closePanel()">إغلاق</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // استقبال البيانات من FiveM
+        window.addEventListener('message', function(event) {
+            if (event.data.type === "openJusticePanel") {
+                document.getElementById('justicePanel').style.display = 'block';
+                updatePanelData(event.data.data);
+            } else if (event.data.type === "closeJusticePanel") {
+                document.getElementById('justicePanel').style.display = 'none';
+            }
+        });
+
+        // تحديث بيانات اللوحة
+        function updatePanelData(data) {
+            if (data.userInfo) {
+                document.getElementById('userInfo').innerHTML = `
+                    <p>اسم المستخدم: ${data.userInfo.username}</p>
+                    <p>نوع الباقة: ${data.userInfo.package_type}</p>
+                `;
+            }
+            if (data.cases) {
+                updateCases(data.cases);
+            }
+            if (data.warrants) {
+                updateWarrants(data.warrants);
+            }
+            if (data.stats) {
+                updateStats(data.stats);
+            }
+        }
+
+        // تحديث قائمة القضايا
+        function updateCases(cases) {
+            const casesList = document.getElementById('activeCasesList');
+            casesList.innerHTML = '';
+            cases.forEach(case_ => {
+                const caseElement = document.createElement('div');
+                caseElement.className = 'case-card';
+                caseElement.innerHTML = `
+                    <h5>قضية #${case_.id}</h5>
+                    <p>المتهم: ${case_.defendant}</p>
+                    <p>الحالة: ${case_.status}</p>
+                    <button class="btn btn-primary btn-sm" onclick="viewCase(${case_.id})">عرض التفاصيل</button>
+                `;
+                casesList.appendChild(caseElement);
+            });
+        }
+
+        // تحديث قائمة مذكرات التوقيف
+        function updateWarrants(warrants) {
+            const warrantsList = document.getElementById('activeWarrantsList');
+            warrantsList.innerHTML = '';
+            warrants.forEach(warrant => {
+                const warrantElement = document.createElement('div');
+                warrantElement.className = 'case-card';
+                warrantElement.innerHTML = `
+                    <h5>مذكرة توقيف #${warrant.id}</h5>
+                    <p>المشتبه به: ${warrant.suspect}</p>
+                    <p>الحالة: ${warrant.status}</p>
+                    <button class="btn btn-primary btn-sm" onclick="viewWarrant(${warrant.id})">عرض التفاصيل</button>
+                `;
+                warrantsList.appendChild(warrantElement);
+            });
+        }
+
+        // تحديث الإحصائيات
+        function updateStats(stats) {
+            document.getElementById('casesStats').innerHTML = `
+                <p>عدد القضايا النشطة: ${stats.activeCases}</p>
+                <p>القضايا المغلقة: ${stats.closedCases}</p>
+                <p>متوسط مدة القضايا: ${stats.avgCaseDuration} يوم</p>
+            `;
+            document.getElementById('warrantsStats').innerHTML = `
+                <p>مذكرات التوقيف النشطة: ${stats.activeWarrants}</p>
+                <p>مذكرات التوقيف المنفذة: ${stats.executedWarrants}</p>
+                <p>متوسط وقت التنفيذ: ${stats.avgExecutionTime} ساعة</p>
+            `;
+        }
+
+        // عرض تفاصيل قضية
+        function viewCase(caseId) {
+            fetch(`https://${GetParentResourceName()}/getCaseDetails`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ caseId })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('caseDetails').innerHTML = `
+                        <p>رقم القضية: ${data.case.id}</p>
+                        <p>المتهم: ${data.case.defendant}</p>
+                        <p>التهمة: ${data.case.charge}</p>
+                        <p>الحالة: ${data.case.status}</p>
+                        <p>تاريخ البدء: ${data.case.startDate}</p>
+                    `;
+                }
+            });
+        }
+
+        // عرض تفاصيل مذكرة توقيف
+        function viewWarrant(warrantId) {
+            fetch(`https://${GetParentResourceName()}/getWarrantDetails`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ warrantId })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('caseDetails').innerHTML = `
+                        <p>رقم المذكرة: ${data.warrant.id}</p>
+                        <p>المشتبه به: ${data.warrant.suspect}</p>
+                        <p>السبب: ${data.warrant.reason}</p>
+                        <p>الحالة: ${data.warrant.status}</p>
+                        <p>تاريخ الإصدار: ${data.warrant.issueDate}</p>
+                    `;
+                }
+            });
+        }
+
+        // إغلاق اللوحة
+        function closePanel() {
+            fetch(`https://${GetParentResourceName()}/closePanel`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+        }
+
+        // إرسال مذكرة توقيف جديدة
+        document.getElementById('newWarrantForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const suspectName = document.getElementById('suspectName').value;
+            const warrantReason = document.getElementById('warrantReason').value;
+
+            fetch(`https://${GetParentResourceName()}/issueWarrant`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    suspectName,
+                    warrantReason
+                })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم إصدار مذكرة التوقيف بنجاح');
+                    document.getElementById('newWarrantForm').reset();
+                } else {
+                    alert(data.error || 'حدث خطأ أثناء إصدار مذكرة التوقيف');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة تحكم الإدارة</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+        .panel-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 1200px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .nav-tabs .nav-link {
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .nav-tabs .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #198754;
+            color: white;
+        }
+        .tab-content {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .btn-success {
+            background-color: #198754;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .btn-success:hover {
+            background-color: #157347;
+        }
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #198754;
+            color: white;
+        }
+        .table {
+            color: white;
+        }
+        .table thead th {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .table td, .table th {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .card {
+            background-color: rgba(25, 135, 84, 0.2);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .card:hover {
+            background-color: rgba(25, 135, 84, 0.3);
+        }
+        .stats-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="panel-container" id="adminPanel" style="display: none;">
+        <h2 class="text-center mb-4">لوحة تحكم الإدارة</h2>
+        
+        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="users-tab" data-bs-toggle="tab" href="#users" role="tab">المستخدمين</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="reports-tab" data-bs-toggle="tab" href="#reports" role="tab">التقارير</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="settings-tab" data-bs-toggle="tab" href="#settings" role="tab">الإعدادات</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logs-tab" data-bs-toggle="tab" href="#logs" role="tab">السجلات</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="adminTabContent">
+            <!-- قسم المستخدمين -->
+            <div class="tab-pane fade show active" id="users" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4>قائمة المستخدمين</h4>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="userSearch" placeholder="بحث عن مستخدم...">
+                        </div>
+                        <div id="usersList">
+                            <!-- سيتم إضافة المستخدمين هنا ديناميكياً -->
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>تفاصيل المستخدم</h4>
+                        <div class="card bg-dark">
+                            <div class="card-body">
+                                <h5 class="card-title">معلومات المستخدم</h5>
+                                <p class="card-text" id="userDetails">اختر مستخدم لعرض التفاصيل</p>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h4>إضافة مستخدم جديد</h4>
+                            <form id="newUserForm">
+                                <div class="mb-3">
+                                    <label class="form-label">اسم المستخدم</label>
+                                    <input type="text" class="form-control" id="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">نوع الباقة</label>
+                                    <select class="form-control" id="packageType" required>
+                                        <option value="SUPER">SUPER</option>
+                                        <option value="MEDIUM">MEDIUM</option>
+                                        <option value="NORMAL">NORMAL</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success">إضافة مستخدم</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم التقارير -->
+            <div class="tab-pane fade" id="reports" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4>التقارير المعلقة</h4>
+                        <div id="pendingReportsList">
+                            <!-- سيتم إضافة التقارير هنا ديناميكياً -->
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>تفاصيل التقرير</h4>
+                        <div class="card bg-dark">
+                            <div class="card-body">
+                                <h5 class="card-title">معلومات التقرير</h5>
+                                <p class="card-text" id="reportDetails">اختر تقرير لعرض التفاصيل</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم الإعدادات -->
+            <div class="tab-pane fade" id="settings" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>إعدادات النظام</h4>
+                        <form id="systemSettingsForm">
+                            <div class="mb-3">
+                                <label class="form-label">اسم السيرفر</label>
+                                <input type="text" class="form-control" id="serverName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">الحد الأقصى للمستخدمين</label>
+                                <input type="number" class="form-control" id="maxUsers" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">حالة الصيانة</label>
+                                <select class="form-control" id="maintenanceMode" required>
+                                    <option value="false">مغلق</option>
+                                    <option value="true">مفتوح</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success">حفظ الإعدادات</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>إحصائيات النظام</h4>
+                        <div class="stats-card">
+                            <div id="systemStats">
+                                <!-- سيتم إضافة إحصائيات النظام هنا -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم السجلات -->
+            <div class="tab-pane fade" id="logs" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <h4>سجلات النظام</h4>
+                        <div class="mb-3">
+                            <select class="form-control" id="logType">
+                                <option value="all">جميع السجلات</option>
+                                <option value="error">الأخطاء</option>
+                                <option value="warning">التحذيرات</option>
+                                <option value="info">المعلومات</option>
+                            </select>
+                        </div>
+                        <div id="systemLogs">
+                            <!-- سيتم إضافة السجلات هنا ديناميكياً -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-success" onclick="closePanel()">إغلاق</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // استقبال البيانات من FiveM
+        window.addEventListener('message', function(event) {
+            if (event.data.type === "openAdminPanel") {
+                document.getElementById('adminPanel').style.display = 'block';
+                updatePanelData(event.data.data);
+            } else if (event.data.type === "closeAdminPanel") {
+                document.getElementById('adminPanel').style.display = 'none';
+            }
+        });
+
+        // تحديث بيانات اللوحة
+        function updatePanelData(data) {
+            if (data.users) {
+                updateUsers(data.users);
+            }
+            if (data.reports) {
+                updateReports(data.reports);
+            }
+            if (data.settings) {
+                updateSettings(data.settings);
+            }
+            if (data.logs) {
+                updateLogs(data.logs);
+            }
+            if (data.stats) {
+                updateStats(data.stats);
+            }
+        }
+
+        // تحديث قائمة المستخدمين
+        function updateUsers(users) {
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            users.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.className = 'card';
+                userElement.innerHTML = `
+                    <h5>${user.username}</h5>
+                    <p>نوع الباقة: ${user.package_type}</p>
+                    <p>آخر تسجيل دخول: ${user.last_login}</p>
+                    <button class="btn btn-success btn-sm" onclick="viewUser(${user.id})">عرض التفاصيل</button>
+                `;
+                usersList.appendChild(userElement);
+            });
+        }
+
+        // تحديث قائمة التقارير
+        function updateReports(reports) {
+            const reportsList = document.getElementById('pendingReportsList');
+            reportsList.innerHTML = '';
+            reports.forEach(report => {
+                const reportElement = document.createElement('div');
+                reportElement.className = 'card';
+                reportElement.innerHTML = `
+                    <h5>تقرير #${report.id}</h5>
+                    <p>المرسل: ${report.reporter}</p>
+                    <p>الحالة: ${report.status}</p>
+                    <button class="btn btn-success btn-sm" onclick="viewReport(${report.id})">عرض التفاصيل</button>
+                `;
+                reportsList.appendChild(reportElement);
+            });
+        }
+
+        // تحديث الإعدادات
+        function updateSettings(settings) {
+            document.getElementById('serverName').value = settings.serverName;
+            document.getElementById('maxUsers').value = settings.maxUsers;
+            document.getElementById('maintenanceMode').value = settings.maintenanceMode;
+        }
+
+        // تحديث السجلات
+        function updateLogs(logs) {
+            const logsList = document.getElementById('systemLogs');
+            logsList.innerHTML = '';
+            logs.forEach(log => {
+                const logElement = document.createElement('div');
+                logElement.className = 'card';
+                logElement.innerHTML = `
+                    <p>${log.timestamp} - ${log.type}: ${log.message}</p>
+                `;
+                logsList.appendChild(logElement);
+            });
+        }
+
+        // تحديث الإحصائيات
+        function updateStats(stats) {
+            document.getElementById('systemStats').innerHTML = `
+                <p>عدد المستخدمين النشطين: ${stats.activeUsers}</p>
+                <p>التقارير المعلقة: ${stats.pendingReports}</p>
+                <p>معدل استخدام النظام: ${stats.systemLoad}%</p>
+            `;
+        }
+
+        // عرض تفاصيل المستخدم
+        function viewUser(userId) {
+            fetch(`https://${GetParentResourceName()}/getUserDetails`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('userDetails').innerHTML = `
+                        <p>اسم المستخدم: ${data.user.username}</p>
+                        <p>نوع الباقة: ${data.user.package_type}</p>
+                        <p>تاريخ التسجيل: ${data.user.created_at}</p>
+                        <p>آخر تسجيل دخول: ${data.user.last_login}</p>
+                    `;
+                }
+            });
+        }
+
+        // عرض تفاصيل التقرير
+        function viewReport(reportId) {
+            fetch(`https://${GetParentResourceName()}/getReportDetails`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ reportId })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('reportDetails').innerHTML = `
+                        <p>رقم التقرير: ${data.report.id}</p>
+                        <p>المرسل: ${data.report.reporter}</p>
+                        <p>المبلغ عنه: ${data.report.reported}</p>
+                        <p>السبب: ${data.report.reason}</p>
+                        <p>الحالة: ${data.report.status}</p>
+                    `;
+                }
+            });
+        }
+
+        // إغلاق اللوحة
+        function closePanel() {
+            fetch(`https://${GetParentResourceName()}/closePanel`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+        }
+
+        // إضافة مستخدم جديد
+        document.getElementById('newUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const packageType = document.getElementById('packageType').value;
+
+            fetch(`https://${GetParentResourceName()}/addUser`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username,
+                    packageType
+                })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم إضافة المستخدم بنجاح');
+                    document.getElementById('newUserForm').reset();
+                } else {
+                    alert(data.error || 'حدث خطأ أثناء إضافة المستخدم');
+                }
+            });
+        });
+
+        // حفظ إعدادات النظام
+        document.getElementById('systemSettingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const serverName = document.getElementById('serverName').value;
+            const maxUsers = document.getElementById('maxUsers').value;
+            const maintenanceMode = document.getElementById('maintenanceMode').value;
+
+            fetch(`https://${GetParentResourceName()}/updateSettings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    serverName,
+                    maxUsers,
+                    maintenanceMode
+                })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم حفظ الإعدادات بنجاح');
+                } else {
+                    alert(data.error || 'حدث خطأ أثناء حفظ الإعدادات');
+                }
+            });
+        });
+
+        // البحث عن المستخدمين
+        document.getElementById('userSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const users = document.querySelectorAll('#usersList .card');
+            users.forEach(user => {
+                const username = user.querySelector('h5').textContent.toLowerCase();
+                if (username.includes(searchTerm)) {
+                    user.style.display = 'block';
+                } else {
+                    user.style.display = 'none';
+                }
+            });
+        });
+
+        // تصفية السجلات
+        document.getElementById('logType').addEventListener('change', function(e) {
+            const logType = e.target.value;
+            fetch(`https://${GetParentResourceName()}/filterLogs`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ logType })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateLogs(data.logs);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
