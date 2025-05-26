@@ -10,24 +10,26 @@
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #0a0a0a;
+            background-color: #000000;
             color: #ffffff;
         }
         .hero-section {
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7));
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8));
             min-height: 60vh;
             display: flex;
             align-items: center;
         }
         .package-card {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 69, 0, 0.1);
             border-radius: 15px;
             padding: 30px;
             margin: 20px 0;
             transition: transform 0.3s;
+            border: 1px solid #ff4500;
         }
         .package-card:hover {
             transform: translateY(-10px);
+            background: rgba(255, 69, 0, 0.2);
         }
         .feature-list {
             list-style: none;
@@ -40,12 +42,12 @@
         }
         .feature-list li:before {
             content: '✓';
-            color: #198754;
+            color: #ff8c00;
             position: absolute;
             right: 0;
         }
         .btn-custom {
-            background: #198754;
+            background: #ff4500;
             color: white;
             padding: 10px 30px;
             border-radius: 25px;
@@ -53,7 +55,7 @@
             transition: all 0.3s;
         }
         .btn-custom:hover {
-            background: #157347;
+            background: #cc3700;
             color: white;
             transform: scale(1.05);
         }
@@ -67,7 +69,7 @@
             position: absolute;
             width: 0;
             height: 2px;
-            background: #198754;
+            background: #ff8c00;
             bottom: 0;
             right: 0;
             transition: width 0.3s;
@@ -75,13 +77,16 @@
         .nav-link:hover:after {
             width: 100%;
         }
+        .text-success {
+            color: #ff8c00 !important;
+        }
     </style>
 </head>
 <body>
     <!-- القائمة العلوية -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: rgba(0,0,0,0.8);">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: rgba(0,0,0,0.9);">
         <div class="container">
-            <a class="navbar-brand" href="#">CFW</a>
+            <a class="navbar-brand" href="#" style="color: #ff8c00;">CFW</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
