@@ -1,4 +1,10 @@
-require('dotenv').config();
+// محاولة تحميل متغيرات البيئة
+try {
+    require('dotenv').config();
+} catch (error) {
+    console.log('ملف .env غير موجود، سيتم استخدام القيم الافتراضية');
+}
+
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
