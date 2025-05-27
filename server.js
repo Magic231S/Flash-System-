@@ -46,6 +46,7 @@ const db = mysql.createConnection({
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'cfw_db',
+    port: process.env.DB_PORT || 3306,
     ssl: process.env.NODE_ENV === 'production' ? {
         rejectUnauthorized: true
     } : false
@@ -55,6 +56,11 @@ const db = mysql.createConnection({
 db.connect((err) => {
     if (err) {
         console.error('خطأ في الاتصال بقاعدة البيانات:', err);
+        // لا نقوم بإيقاف التطبيق، بل نحاول إعادة الاتصال
+        setTimeout(() => {
+            console.log('محاولة إعادة الاتصال بقاعدة البيانات...');
+            db.connect();
+        }, 5000);
         return;
     }
     console.log('تم الاتصال بقاعدة البيانات بنجاح');
@@ -63,7 +69,7 @@ db.connect((err) => {
 // معالجة أخطاء الاتصال
 db.on('error', (err) => {
     console.error('خطأ في قاعدة البيانات:', err);
-    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+    if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNREFUSED') {
         console.log('إعادة الاتصال بقاعدة البيانات...');
         db.connect();
     } else {
