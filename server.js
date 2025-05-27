@@ -6,54 +6,46 @@ const passport = require('passport');
 const DiscordStrategy = require('passport-discord').Strategy;
 const MySQLStore = require('express-mysql-session')(session);
 const bcrypt = require('bcrypt');
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 const cors = require('cors');
 
 const app = express();
-const port = 3001;
+const port = 3000;
 
-// إعدادات قاعدة البيانات
-const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'cfw_db'
-};
-
-// إنشاء اتصال قاعدة البيانات
-const pool = mysql.createPool(dbConfig);
-
-// إعدادات الجلسة
-const sessionStore = new MySQLStore({
-    ...dbConfig,
-    createDatabaseTable: true
+// تكوين قاعدة البيانات
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'cfw_db'
 });
 
+// تكوين جلسة MySQL
+const sessionStore = new MySQLStore({
+    expiration: 86400000, // 24 ساعة
+    createDatabaseTable: true
+}, db);
+
+// تكوين الجلسات
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    key: 'session_cookie_name',
+    secret: 'session_cookie_secret',
     store: sessionStore,
     resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 ساعة
-    }
+    saveUninitialized: false
 }));
 
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
-    credentials: true
-}));
+app.use(express.static(path.join(__dirname)));
 
 // تسجيل مستخدم جديد
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password, packageType } = req.body;
-        
+
         // التحقق من وجود المستخدم
-        const [existingUsers] = await pool.execute(
+        const [existingUsers] = await db.promise().query(
             'SELECT * FROM users WHERE username = ? OR email = ?',
             [username, email]
         );
@@ -65,8 +57,8 @@ app.post('/api/register', async (req, res) => {
         // تشفير كلمة المرور
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // إنشاء المستخدم
-        await pool.execute(
+        // إدخال المستخدم الجديد
+        await db.promise().query(
             'INSERT INTO users (username, email, password, package_type) VALUES (?, ?, ?, ?)',
             [username, email, hashedPassword, packageType]
         );
@@ -74,7 +66,7 @@ app.post('/api/register', async (req, res) => {
         res.status(201).json({ message: 'تم إنشاء الحساب بنجاح' });
     } catch (error) {
         console.error('خطأ في التسجيل:', error);
-        res.status(500).json({ error: 'حدث خطأ أثناء التسجيل' });
+        res.status(500).json({ error: 'حدث خطأ أثناء إنشاء الحساب' });
     }
 });
 
@@ -84,7 +76,7 @@ app.post('/api/login', async (req, res) => {
         const { username, password } = req.body;
 
         // البحث عن المستخدم
-        const [users] = await pool.execute(
+        const [users] = await db.promise().query(
             'SELECT * FROM users WHERE username = ?',
             [username]
         );
@@ -101,51 +93,36 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
         }
 
-        // تحديث آخر تسجيل دخول
-        await pool.execute(
-            'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?',
-            [user.id]
-        );
-
         // إنشاء جلسة
-        req.session.user = {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            packageType: user.package_type
-        };
+        req.session.userId = user.id;
+        req.session.username = user.username;
+        req.session.packageType = user.package_type;
 
-        res.json({
-            message: 'تم تسجيل الدخول بنجاح',
-            user: req.session.user
-        });
+        res.json({ message: 'تم تسجيل الدخول بنجاح' });
     } catch (error) {
         console.error('خطأ في تسجيل الدخول:', error);
         res.status(500).json({ error: 'حدث خطأ أثناء تسجيل الدخول' });
     }
 });
 
-// تسجيل الخروج
-app.post('/api/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ error: 'حدث خطأ أثناء تسجيل الخروج' });
-        }
-        res.json({ message: 'تم تسجيل الخروج بنجاح' });
-    });
-});
-
-// التحقق من حالة الجلسة
+// التحقق من حالة تسجيل الدخول
 app.get('/api/check-auth', (req, res) => {
-    if (req.session.user) {
-        res.json({ user: req.session.user });
+    if (req.session.userId) {
+        res.json({
+            isAuthenticated: true,
+            username: req.session.username,
+            packageType: req.session.packageType
+        });
     } else {
-        res.status(401).json({ error: 'غير مصرح' });
+        res.json({ isAuthenticated: false });
     }
 });
 
-// تقديم الملفات الثابتة من مجلد website
-app.use(express.static(path.join(__dirname)));
+// تسجيل الخروج
+app.post('/api/logout', (req, res) => {
+    req.session.destroy();
+    res.json({ message: 'تم تسجيل الخروج بنجاح' });
+});
 
 // توجيه جميع الطلبات إلى index.html
 app.get('*', (req, res) => {
