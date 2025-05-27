@@ -10,14 +10,14 @@ const mysql = require('mysql2');
 const cors = require('cors');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // تكوين قاعدة البيانات
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'cfw_db'
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'cfw_db'
 });
 
 // التحقق من الاتصال بقاعدة البيانات
@@ -49,10 +49,14 @@ const sessionStore = new MySQLStore({
 // تكوين الجلسات
 app.use(session({
     key: 'session_cookie_name',
-    secret: 'session_cookie_secret',
+    secret: process.env.SESSION_SECRET || 'session_cookie_secret',
     store: sessionStore,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 ساعة
+    }
 }));
 
 app.use(cors());
