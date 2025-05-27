@@ -20,6 +20,26 @@ const db = mysql.createConnection({
     database: 'cfw_db'
 });
 
+// التحقق من الاتصال بقاعدة البيانات
+db.connect((err) => {
+    if (err) {
+        console.error('خطأ في الاتصال بقاعدة البيانات:', err);
+        return;
+    }
+    console.log('تم الاتصال بقاعدة البيانات بنجاح');
+});
+
+// معالجة أخطاء الاتصال
+db.on('error', (err) => {
+    console.error('خطأ في قاعدة البيانات:', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        console.log('إعادة الاتصال بقاعدة البيانات...');
+        db.connect();
+    } else {
+        throw err;
+    }
+});
+
 // تكوين جلسة MySQL
 const sessionStore = new MySQLStore({
     expiration: 86400000, // 24 ساعة
@@ -42,8 +62,29 @@ app.use(express.static(path.join(__dirname)));
 // تسجيل مستخدم جديد
 app.post('/api/register', async (req, res) => {
     try {
+        console.log('بدء عملية التسجيل...');
         const { username, email, password, packageType } = req.body;
+        console.log('البيانات المستلمة:', { username, email, packageType });
 
+        if (!username || !email || !password || !packageType) {
+            console.log('بيانات ناقصة');
+            return res.status(400).json({ error: 'جميع الحقول مطلوبة' });
+        }
+
+        // التحقق من صحة البريد الإلكتروني
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            console.log('البريد الإلكتروني غير صالح');
+            return res.status(400).json({ error: 'البريد الإلكتروني غير صالح' });
+        }
+
+        // التحقق من طول كلمة المرور
+        if (password.length < 6) {
+            console.log('كلمة المرور قصيرة جداً');
+            return res.status(400).json({ error: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' });
+        }
+
+        console.log('التحقق من وجود المستخدم...');
         // التحقق من وجود المستخدم
         const [existingUsers] = await db.promise().query(
             'SELECT * FROM users WHERE username = ? OR email = ?',
@@ -51,30 +92,45 @@ app.post('/api/register', async (req, res) => {
         );
 
         if (existingUsers.length > 0) {
+            console.log('المستخدم موجود بالفعل');
             return res.status(400).json({ error: 'اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل' });
         }
 
+        console.log('تشفير كلمة المرور...');
         // تشفير كلمة المرور
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        console.log('إدخال المستخدم الجديد...');
         // إدخال المستخدم الجديد
         await db.promise().query(
             'INSERT INTO users (username, email, password, package_type) VALUES (?, ?, ?, ?)',
             [username, email, hashedPassword, packageType]
         );
 
+        console.log('تم إنشاء الحساب بنجاح');
         res.status(201).json({ message: 'تم إنشاء الحساب بنجاح' });
     } catch (error) {
         console.error('خطأ في التسجيل:', error);
-        res.status(500).json({ error: 'حدث خطأ أثناء إنشاء الحساب' });
+        res.status(500).json({ 
+            error: 'حدث خطأ أثناء إنشاء الحساب',
+            details: error.message 
+        });
     }
 });
 
 // تسجيل الدخول
 app.post('/api/login', async (req, res) => {
     try {
+        console.log('بدء عملية تسجيل الدخول...');
         const { username, password } = req.body;
+        console.log('محاولة تسجيل دخول:', username);
 
+        if (!username || !password) {
+            console.log('بيانات تسجيل الدخول ناقصة');
+            return res.status(400).json({ error: 'اسم المستخدم وكلمة المرور مطلوبان' });
+        }
+
+        console.log('البحث عن المستخدم...');
         // البحث عن المستخدم
         const [users] = await db.promise().query(
             'SELECT * FROM users WHERE username = ?',
@@ -82,26 +138,40 @@ app.post('/api/login', async (req, res) => {
         );
 
         if (users.length === 0) {
+            console.log('المستخدم غير موجود');
             return res.status(401).json({ error: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
         }
 
         const user = users[0];
+        console.log('التحقق من كلمة المرور...');
 
         // التحقق من كلمة المرور
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
+            console.log('كلمة المرور غير صحيحة');
             return res.status(401).json({ error: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
         }
 
+        console.log('إنشاء الجلسة...');
         // إنشاء جلسة
         req.session.userId = user.id;
         req.session.username = user.username;
         req.session.packageType = user.package_type;
 
-        res.json({ message: 'تم تسجيل الدخول بنجاح' });
+        console.log('تم تسجيل الدخول بنجاح');
+        res.json({ 
+            message: 'تم تسجيل الدخول بنجاح',
+            user: {
+                username: user.username,
+                packageType: user.package_type
+            }
+        });
     } catch (error) {
         console.error('خطأ في تسجيل الدخول:', error);
-        res.status(500).json({ error: 'حدث خطأ أثناء تسجيل الدخول' });
+        res.status(500).json({ 
+            error: 'حدث خطأ أثناء تسجيل الدخول',
+            details: error.message 
+        });
     }
 });
 
