@@ -102,6 +102,58 @@ app.use(session({
     }
 }));
 
+// إعدادات Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const [users] = await db.promise().query('SELECT * FROM users WHERE id = ?', [id]);
+        done(null, users[0]);
+    } catch (error) {
+        done(error);
+    }
+});
+
+// تكوين استراتيجية Discord
+passport.use(new DiscordStrategy({
+    clientID: process.env.DISCORD_CLIENT_ID,
+    clientSecret: process.env.DISCORD_CLIENT_SECRET,
+    callbackURL: process.env.DISCORD_CALLBACK_URL || 'http://localhost:3000/auth/discord/callback',
+    scope: ['identify', 'email']
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        // البحث عن المستخدم أو إنشاء مستخدم جديد
+        const [users] = await db.promise().query(
+            'SELECT * FROM users WHERE discord_id = ?',
+            [profile.id]
+        );
+
+        if (users.length > 0) {
+            return done(null, users[0]);
+        }
+
+        // إنشاء مستخدم جديد
+        const [result] = await db.promise().query(
+            'INSERT INTO users (username, email, discord_id, package_type) VALUES (?, ?, ?, ?)',
+            [profile.username, profile.email, profile.id, 'NORMAL']
+        );
+
+        const [newUser] = await db.promise().query(
+            'SELECT * FROM users WHERE id = ?',
+            [result.insertId]
+        );
+
+        done(null, newUser[0]);
+    } catch (error) {
+        done(error);
+    }
+}));
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
