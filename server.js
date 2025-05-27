@@ -8,8 +8,6 @@ try {
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
-const passport = require('passport');
-const DiscordStrategy = require('passport-discord').Strategy;
 const MySQLStore = require('express-mysql-session')(session);
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
@@ -99,58 +97,6 @@ app.use(session({
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 24 ساعة
         sameSite: 'strict'
-    }
-}));
-
-// إعدادات Passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-    try {
-        const [users] = await db.promise().query('SELECT * FROM users WHERE id = ?', [id]);
-        done(null, users[0]);
-    } catch (error) {
-        done(error);
-    }
-});
-
-// تكوين استراتيجية Discord
-passport.use(new DiscordStrategy({
-    clientID: process.env.DISCORD_CLIENT_ID,
-    clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    callbackURL: process.env.DISCORD_CALLBACK_URL || 'http://localhost:3000/auth/discord/callback',
-    scope: ['identify', 'email']
-}, async (accessToken, refreshToken, profile, done) => {
-    try {
-        // البحث عن المستخدم أو إنشاء مستخدم جديد
-        const [users] = await db.promise().query(
-            'SELECT * FROM users WHERE discord_id = ?',
-            [profile.id]
-        );
-
-        if (users.length > 0) {
-            return done(null, users[0]);
-        }
-
-        // إنشاء مستخدم جديد
-        const [result] = await db.promise().query(
-            'INSERT INTO users (username, email, discord_id, package_type) VALUES (?, ?, ?, ?)',
-            [profile.username, profile.email, profile.id, 'NORMAL']
-        );
-
-        const [newUser] = await db.promise().query(
-            'SELECT * FROM users WHERE id = ?',
-            [result.insertId]
-        );
-
-        done(null, newUser[0]);
-    } catch (error) {
-        done(error);
     }
 }));
 
@@ -296,15 +242,6 @@ app.post('/api/logout', (req, res) => {
 // توجيه جميع الطلبات إلى index.html
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// نقاط نهاية Discord
-app.get('/auth/discord', passport.authenticate('discord'));
-app.get('/auth/discord/callback', passport.authenticate('discord', {
-    failureRedirect: '/login.html'
-}), (req, res) => {
-    // نجاح المصادقة
-    res.send(`<script>window.opener.postMessage({type:'oauth', provider:'discord', user:${JSON.stringify(req.user)}}, '*');window.close();</script>`);
 });
 
 app.listen(port, () => {
