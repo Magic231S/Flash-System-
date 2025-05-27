@@ -18,12 +18,39 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// إعدادات الأمان
+app.use((req, res, next) => {
+    // منع الوصول من مصادر غير مصرح بها
+    const allowedOrigins = ['https://flash-system-7f1c.onrender.com', 'http://localhost:3000'];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    
+    // منع هجمات XSS
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    
+    // منع هجمات Clickjacking
+    res.setHeader('X-Frame-Options', 'DENY');
+    
+    // منع هجمات MIME-type
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    
+    // منع هجمات CSRF
+    res.setHeader('X-CSRF-Protection', '1');
+    
+    next();
+});
+
 // تكوين قاعدة البيانات
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'cfw_db'
+    database: process.env.DB_NAME || 'cfw_db',
+    ssl: process.env.NODE_ENV === 'production' ? {
+        rejectUnauthorized: true
+    } : false
 });
 
 // التحقق من الاتصال بقاعدة البيانات
@@ -49,7 +76,15 @@ db.on('error', (err) => {
 // تكوين جلسة MySQL
 const sessionStore = new MySQLStore({
     expiration: 86400000, // 24 ساعة
-    createDatabaseTable: true
+    createDatabaseTable: true,
+    schema: {
+        tableName: 'sessions',
+        columnNames: {
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'data'
+        }
+    }
 }, db);
 
 // تكوين الجلسات
@@ -61,7 +96,9 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 ساعة
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 24 ساعة
+        sameSite: 'strict'
     }
 }));
 
